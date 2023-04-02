@@ -1,0 +1,12 @@
+NFT/Protoimages
+
+hardhat-project/node_modules
+hardhat-project/.env
+hardhat-project/coverage
+hardhat-project/coverage.json
+hardhat-project/typechain
+hardhat-project/typechain-types
+
+# Hardhat files
+hardhat-project/cache
+hardhat-project/artifacts
