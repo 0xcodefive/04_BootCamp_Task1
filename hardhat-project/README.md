@@ -126,3 +126,31 @@ Result:
 |  St0xC0deNFT                    ·           -  ·          -  ·    4156178  ·       13.9 %  ·          -  │
 ·---------------------------------|--------------|-------------|-------------|---------------|-------------·
 ```
+
+## Deploy to TestNet BSC
+
+```shell
+PS C:\YandexDisk\CIS Devs - BNB Chain\04_BootCamp_Task1\hardhat-project> npx hardhat run --network bnbt scripts/deployNFT.js
+owner address: 0xc0dE5F13aFA04f09193ef9Cc29f68276722e7Aa5
+Deployed token address: 0x451C3E745909e510cC93B6819F8958458055E361
+Contract deployed to 0x451C3E745909e510cC93B6819F8958458055E361 on bnbt
+Verifying contract on Etherscan...
+Nothing to compile
+Successfully submitted source code for contract
+contracts/NFT_BootCamp_CIS.sol:St0xC0deNFT at 0x451C3E745909e510cC93B6819F8958458055E361
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract St0xC0deNFT on Etherscan.
+PS C:\YandexDisk\CIS Devs - BNB Chain\04_BootCamp_Task1\hardhat-project> npx hardhat run --network bnbt scripts/deployToken.js
+owner address: 0xc0dE5F13aFA04f09193ef9Cc29f68276722e7Aa5
+Deployed token address: 0x2199B824BA808E90f2d257CD9bcac837c3927595
+Contract deployed to 0x2199B824BA808E90f2d257CD9bcac837c3927595 on bnbt
+Verifying contract on Etherscan...
+Nothing to compile
+Successfully submitted source code for contract
+contracts/Token_BootCamp_CIS.sol:TZ2H at 0x2199B824BA808E90f2d257CD9bcac837c3927595
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract TZ2H on Etherscan.
+https://testnet.bscscan.com/address/0x2199B824BA808E90f2d257CD9bcac837c3927595#code
+```

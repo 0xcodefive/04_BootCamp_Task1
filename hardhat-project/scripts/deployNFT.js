@@ -2,20 +2,13 @@ const hre = require("hardhat");
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  const Token = await hre.ethers.getContractFactory("NFT");
+  const Token = await hre.ethers.getContractFactory("St0xC0deNFT");
 
-  const token = await Token.deploy();
+  const param1 = "ipfs://QmXmgzwDqrbQ9YNV4WQroqqLY9GaGtvzWBrUJy1eL4sMPL/";
+  const token = await Token.deploy(param1);
   await token.deployed();
 
   console.log(`owner address: ${owner.address}`);
-
-  await token.safeMint(owner.address, {
-    value: ethers.utils.parseEther("0.001"),
-  });
-  await token.safeMint(owner.address, {
-    value: ethers.utils.parseEther("0.001"),
-  });
-
   console.log(`Deployed token address: ${token.address}`);
 
   const WAIT_BLOCK_CONFIRMATIONS = 6;
@@ -27,7 +20,7 @@ async function main() {
 
   await run(`verify:verify`, {
     address: token.address,
-    constructorArguments: [],
+    constructorArguments: [param1],
   });
 }
 

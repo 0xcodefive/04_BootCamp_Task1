@@ -10,7 +10,7 @@
 *                                                            *
 \************************************************************/                                                  
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
@@ -28,10 +28,12 @@ contract St0xC0deNFT is ERC721Enumerable, IERC2981, Ownable, ReentrancyGuard {
     string public baseURI;
     mapping(address => bool) public addressMinted;
 
+    event NewMint(address indexed, uint256);
     event Received(address indexed, uint256);
 
-    constructor(string memory _baseURI) ERC721("Students of Zero2Hero by 0xc0de", "St0xC0de") {
+    constructor(string memory _baseURI) ERC721("Students of Zero2Hero by 0xc0de", "NFT0xC0de") {
         baseURI = _baseURI;
+        _safeMint(msg.sender, 1);
     }
 
     function setBaseURI(uint256 _count, string memory _baseURI) public onlyOwner {
@@ -50,6 +52,7 @@ contract St0xC0deNFT is ERC721Enumerable, IERC2981, Ownable, ReentrancyGuard {
         uint256 _currentSupply = totalSupply();
         require(_currentSupply < MAX_SUPPLY, "You reached max supply");
         addressMinted[msg.sender] = true;
+        emit NewMint(msg.sender, _currentSupply);
         _safeMint(msg.sender, 1);
     }
 
@@ -82,7 +85,8 @@ contract St0xC0deNFT is ERC721Enumerable, IERC2981, Ownable, ReentrancyGuard {
         require(success, "withdraw failed");
     }
 
-    function withdrawTokens(IERC20 token) external onlyOwner {
+    function withdrawTokens(address _address) external onlyOwner {
+        IERC20 token = IERC20(_address);
         uint256 balance = token.balanceOf(address(this));
         token.transfer(_msgSender(), balance);
     }
