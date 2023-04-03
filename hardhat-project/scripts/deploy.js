@@ -1,27 +1,34 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
 const hre = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const [owner] = await ethers.getSigners();
+  const Token = await hre.ethers.getContractFactory("NFT");
 
-  const lockedAmount = hre.ethers.utils.parseEther("0.001");
+  const token = await Token.deploy();
+  await token.deployed();
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  console.log(`owner address: ${owner.address}`);
 
-  await lock.deployed();
+  await token.safeMint(owner.address, {
+    value: ethers.utils.parseEther("0.001"),
+  });
+  await token.safeMint(owner.address, {
+    value: ethers.utils.parseEther("0.001"),
+  });
 
-  console.log(
-    `Lock with ${ethers.utils.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
-  );
+  console.log(`Deployed token address: ${token.address}`);
+
+  const WAIT_BLOCK_CONFIRMATIONS = 6;
+  await token.deployTransaction.wait(WAIT_BLOCK_CONFIRMATIONS);
+
+  console.log(`Contract deployed to ${token.address} on ${network.name}`);
+
+  console.log(`Verifying contract on Etherscan...`);
+
+  await run(`verify:verify`, {
+    address: token.address,
+    constructorArguments: [],
+  });
 }
 
 // We recommend this pattern to be able to use async/await everywhere
