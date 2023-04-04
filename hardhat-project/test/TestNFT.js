@@ -1,20 +1,17 @@
 const { ethers } = require("hardhat");
 const { assert, expect } = require("chai");
 
-describe("St0xC0deNFT", function () {
+describe("NFT0xC0de", function () {
   let factory, contract, owner, user, recipient;
   beforeEach(async function () {
     [owner, user, recipient] = await ethers.getSigners();
-    factory = await ethers.getContractFactory("St0xC0deNFT");
+    factory = await ethers.getContractFactory("NFT0xC0de");
     contract = await factory.deploy("none");
-
-    const value = ethers.utils.parseEther("0.001");
-    // await contract.connect(user).safeMint({ value: value });
   });
 
   it("Should have 'none' after deployment", async function () {
-    console.log(`Contract owner address: ${owner.address}`);
-    console.log(`Contract user address: ${user.address}`);
+    console.log(`Owner address: ${owner.address}`);
+    console.log(`User address: ${user.address}`);
     console.log(`Contract address: ${contract.address}`);
 
     const expectedBaseURI = "none";
@@ -44,21 +41,18 @@ describe("St0xC0deNFT", function () {
   });
 
   it("Should mint NFT to sender if conditions are met", async function () {
-    const initialBalance = await contract.balanceOf(owner.address);
-    console.log(`Contract initialBalance for owner: ${initialBalance}`);
-
+    const initialBalance = await contract.balanceOf(user.address);
     const value = ethers.utils.parseEther("0.001");
-    await contract.connect(owner).safeMint({ value: value });
-
-    const finalBalance = await contract.balanceOf(owner.address);
+    await contract.connect(user).safeMint({ value: value });
+    const finalBalance = await contract.balanceOf(user.address);
     expect(finalBalance).to.equal(initialBalance.add(1));
   });
 
   it("Should revert if the sender has already minted an NFT", async function () {
     const value = ethers.utils.parseEther("0.001");
-    await contract.connect(owner).safeMint({ value: value });
+    await contract.connect(recipient).safeMint({ value: value });
     await expect(
-      contract.connect(owner).safeMint({ value: value })
+      contract.connect(recipient).safeMint({ value: value })
     ).to.be.revertedWith("Mint is not available for you");
   });
 
@@ -69,38 +63,42 @@ describe("St0xC0deNFT", function () {
     expect(newRoyaltyFee).to.be.equal(currentFee);
   });
 
-  //   it("Should return the contract balance", async function () {
-  //     const contractAddress = contract.address;
-  //     const balance = await ethers.provider.getBalance(contractAddress);
-  //     console.log(`Contract balance: ${balance}`);
+  it("Should transfer NFT from user to user", async function () {
+    const tokenId = 0;
+    await contract
+      .connect(owner)
+      .transferFrom(owner.address, recipient.address, tokenId);
+    expect(await contract.ownerOf(tokenId)).to.equal(recipient.address);
 
-  //     assert(balance.gt(0), "Contract balance should be greater than zero");
-  //   });
-
-  //   it("Should transfer NFT from user to user", async function () {
-  //     const tokenId = 0;
-  //     expect(await contract.ownerOf(tokenId)).to.equal(user.address);
-  //     await contract.transferFrom(user.address, recipient.address, tokenId);
-  //     expect(await contract.ownerOf(tokenId)).to.equal(recipient.address);
-  //   });
-
-  //   it("Should returns the correct royalty information", async function () {
-  //     const tokenId = 0;
-  //     const salePrice = ethers.utils.parseEther("0.001");
-  //     const [receiver, royaltyAmount] = await contract.royaltyInfo(
-  //       tokenId,
-  //       salePrice
-  //     );
-  //     expect(receiver).to.equal(user.address);
-  //     expect(royaltyAmount).to.equal(
-  //       salePrice.div(10000).mul(contract.royaltyFee)
-  //     );
-  //   });
+    await contract
+      .connect(recipient)
+      .transferFrom(recipient.address, owner.address, tokenId);
+    expect(await contract.ownerOf(tokenId)).to.equal(owner.address);
+  });
 
   it("Should withdraw Ethers", async function () {
     await contract.connect(owner).withdraw();
     const contractAddress = contract.address;
     const balance = await ethers.provider.getBalance(contractAddress);
     assert.equal(balance, 0);
+  });
+
+  it("Should approve Owner to transfer token", async function () {
+    const address = "0x68B1D87F95878fE05B998F19b66F4baba5De1aed";
+    await contract.connect(owner).approve(address, 0);
+    expect(await contract.getApproved(0)).to.equal(address);
+  });
+
+  it("Should emit Received event on receiving Ether", async function() {
+    const transaction = {
+      to: contract.address,
+      value: ethers.utils.parseEther("1.0")
+    };
+    await owner.sendTransaction(transaction);
+
+    const events = await contract.queryFilter("Received");
+    expect(events.length).to.equal(1);
+    expect(events[0].args[0]).to.equal(owner.address);
+    expect(events[0].args[1]).to.equal(transaction.value);
   });
 });

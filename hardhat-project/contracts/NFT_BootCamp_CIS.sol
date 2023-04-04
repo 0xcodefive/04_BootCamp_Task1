@@ -18,7 +18,7 @@ import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
-contract St0xC0deNFT is ERC721Enumerable, IERC2981, Ownable, ReentrancyGuard {
+contract NFT0xC0de is ERC721Enumerable, IERC2981, Ownable, ReentrancyGuard {
     using Strings for uint256;
 
     uint64 public royaltyFee = 500;
@@ -31,9 +31,9 @@ contract St0xC0deNFT is ERC721Enumerable, IERC2981, Ownable, ReentrancyGuard {
     event NewMint(address indexed, uint256);
     event Received(address indexed, uint256);
 
-    constructor(string memory _baseURI) ERC721("Students of Zero2Hero by 0xc0de", "NFT0xC0de") {
+    constructor(string memory _baseURI) ERC721("Students of 0xc0de", "NFT0xC0de") {
         baseURI = _baseURI;
-        _safeMint(msg.sender, 1);
+        _safeMint(msg.sender, 0);
     }
 
     function setBaseURI(uint256 _count, string memory _baseURI) public onlyOwner {
@@ -53,7 +53,7 @@ contract St0xC0deNFT is ERC721Enumerable, IERC2981, Ownable, ReentrancyGuard {
         require(_currentSupply < MAX_SUPPLY, "You reached max supply");
         addressMinted[msg.sender] = true;
         emit NewMint(msg.sender, _currentSupply);
-        _safeMint(msg.sender, 1);
+        _safeMint(msg.sender, _currentSupply);
     }
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {

@@ -2,7 +2,7 @@ const hre = require("hardhat");
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  const Token = await hre.ethers.getContractFactory("St0xC0deNFT");
+  const Token = await hre.ethers.getContractFactory("NFT0xC0de");
 
   const param1 = "ipfs://QmXmgzwDqrbQ9YNV4WQroqqLY9GaGtvzWBrUJy1eL4sMPL/";
   const token = await Token.deploy(param1);

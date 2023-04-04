@@ -2,9 +2,9 @@ const hre = require("hardhat");
 
 async function main() {
   const [owner] = await ethers.getSigners();
-  const Token = await hre.ethers.getContractFactory("TZ2H");
+  const Token = await hre.ethers.getContractFactory("T0xC");
 
-  const param1 = "0x451C3E745909e510cC93B6819F8958458055E361";
+  const param1 = "0xEFa93A2839BDCda7416EA0E29e536a55b9109EA9";
   const token = await Token.deploy(param1);
   await token.deployed();
 

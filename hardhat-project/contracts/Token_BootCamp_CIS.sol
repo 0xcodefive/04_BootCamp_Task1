@@ -17,10 +17,10 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract TZ2H is ERC20, Ownable, ReentrancyGuard {
+contract T0xC is ERC20, IERC721Receiver, Ownable, ReentrancyGuard {
     using SafeMath for uint256;
 
     uint256 constant public STAKING_REWARD = 1 * 10 ** 18;
@@ -28,15 +28,15 @@ contract TZ2H is ERC20, Ownable, ReentrancyGuard {
     uint256 constant public BURN_FEE = 1; // 0.01%
     uint256 constant public FIRST_MINT_REWARD = 720 * 10 ** 18;
 
-    IERC721Enumerable public _nftCollection;
+    IERC721 public _nftCollection;
     mapping (uint256 => uint256) public _lastStakeTime;
     mapping (uint256 => address) public _owners;
     mapping (uint256 => bool) public _isFirstStaked;
 
     event Received(address indexed, uint256);
 
-    constructor(address nftCollectionAddress) ERC20("Token of Zero2Hero by 0xc0de", "TZ2H") {
-        _nftCollection = IERC721Enumerable(nftCollectionAddress);
+    constructor(address nftCollectionAddress) ERC20("Token by 0xc0de", "T0xC") {
+        _nftCollection = IERC721 (nftCollectionAddress);
     }
 
     function stake(uint256 tokenId) public nonReentrant {
@@ -85,7 +85,11 @@ contract TZ2H is ERC20, Ownable, ReentrancyGuard {
     }
 
     function setNftCollectionAddress(address _address) public onlyOwner {
-        _nftCollection = IERC721Enumerable(_address);
+        _nftCollection = IERC721(_address);
+    }
+
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external pure override returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
     }
 
     function withdraw() external onlyOwner {
